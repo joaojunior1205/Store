@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt-nodejs');
+const { user } = require('pg/lib/defaults');
 
 module.exports = app => {
     const { existsOrError, notExistsOrError, equalsOrError } = app.src.api.validation;
@@ -29,7 +30,7 @@ module.exports = app => {
             if (!user.id) {
                 notExistsOrError(userFromDb, 'Usuário já cadastrado');
             }
-        } catch(e) {
+        } catch (e) {
             return res.status(400).send(e);
         }
 
@@ -40,7 +41,7 @@ module.exports = app => {
             app.db('usuarios')
                 .update(user)
                 .where({ id: user.id })
-                .then(_ => res.status(204).send)
+                .then(_ => res.status(204).send('Usuário atualizado com sucesso!'))
                 .catch(err => res.status(500).send(err));
         } else {
             app.db('usuarios')
@@ -52,10 +53,21 @@ module.exports = app => {
 
     const get = (req, res) => {
         app.db('usuarios')
-            .select('id', 'name', 'email', 'admin')
+            .select('id', 'nome', 'email', 'admin')
             .then(users => res.json(users))
             .catch(err => res.status(500).send(err));
     }
 
-    return { save, get }
+    const getUserById = (req, res) => {
+        const idUser = req.params.id;
+
+        app.db('usuarios')
+            .select('id', 'nome', 'email', 'admin')
+            .where({ id: idUser })
+            .first() // Retorna apenas um único resultado.
+            .then(user => res.json(user))
+            .catch(err => res.status(500).send(err));
+    }
+
+    return { save, get, getUserById }
 }
