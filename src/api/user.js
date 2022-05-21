@@ -16,19 +16,21 @@ module.exports = app => {
         }
 
         try {
-            existsOrError(user.name, 'Nome não informado')
-            existsOrError(user.email, 'E-mail não informado')
-            existsOrError(user.password, 'Senha não infromada')
-            existsOrError(user.confirmPassword, 'Confirmação de senha inválida')
-            equalsOrError(user.password, user.confirmPassword, 'As senhas informadas não conferem')
+            existsOrError(user.nome, 'Nome não informado');
+            existsOrError(user.email, 'E-mail não informado');
+            existsOrError(user.password, 'Senha não infromada');
+            existsOrError(user.confirmPassword, 'Confirmação de senha inválida');
+            equalsOrError(user.password, user.confirmPassword, 'As senhas informadas não conferem');
 
-            const userFromDb = await app.db('usuarios').where({ email: user.email }).first();
+            const userFromDb = await app.db('usuarios')
+                .where({ email: user.email })
+                .first();
 
             if (!user.id) {
                 notExistsOrError(userFromDb, 'Usuário já cadastrado');
             }
-        } catch (msg) {
-            return res.status(400);
+        } catch(e) {
+            return res.status(400).send(e);
         }
 
         user.password = encryptPassword(user.password);
@@ -38,12 +40,12 @@ module.exports = app => {
             app.db('usuarios')
                 .update(user)
                 .where({ id: user.id })
-                .then(_=> res.status(204).send)
+                .then(_ => res.status(204).send)
                 .catch(err => res.status(500).send(err));
         } else {
             app.db('usuarios')
                 .insert(user)
-                .then(_=> res.status(204).send())
+                .then(_ => res.status(204).send())
                 .catch(err => res.status(500).send(err));
         }
     };
