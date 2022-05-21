@@ -41,7 +41,7 @@ module.exports = app => {
             app.db('usuarios')
                 .update(user)
                 .where({ id: user.id })
-                .then(_ => res.status(204).send('Usuário atualizado com sucesso!'))
+                .then(_ => res.status(204).send())
                 .catch(err => res.status(500).send(err));
         } else {
             app.db('usuarios')

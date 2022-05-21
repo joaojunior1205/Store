@@ -6,9 +6,8 @@ exports.up = function(knex) {
     return knex.schema.createTable('produtos', table => {
         table.increments('id').primary()
         table.string('nome').notNull()
-        table.float('price')
-        table.integer('autorId').references('id')
-            .inTable('usuarios').notNull()
+        table.float('preco')
+        //table.integer('autorId').references('id').inTable('usuarios').notNull()
   })
 };
 
