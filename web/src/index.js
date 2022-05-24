@@ -1,53 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 
-import InputText from './Components/Inputs/text';
-import InputPassword from './Components/Inputs/password';
-import ButtomPrimary from './Components/Buttons/buttomPrimary';
 
-const styles = {
-    labelStyles: {
-        marginRight: 10,
-        fontSize: 18,
-        color: 'gray'
-    },
-
-    styleButtom: {
-        backgroundColor: 'white',
-        borderWidth: 0.5,
-        borderRadius: 10,
-        width: '100%',
-        height: 40
-        
+const IndexCompoenet = () => {
+   const [user, setUser] = useState([]);
+    
+    const loadUser = () => {
+        axios.get("http://localhost:3001/user")
+          .then((response) => setUser(response.data))
+          .catch((err) => {console.error("ops! ocorreu um erro" + err)});
     }
+    
+    loadUser()
+
+    const RenderNome = (nome, email) => {
+        return (
+            <div style={{backgroundColor: '#ddd', padding: 20, marginBottom: 20, borderRadius: 20}}>
+                <h4>Nome: {nome}</h4>
+                <h4>Email: {email}</h4>
+            </div>
+        )
+    }
+    
+    const register = (
+        <div>
+            <h1>{user.map((e) => RenderNome(e.nome, e.email))}</h1>
+        </div>
+    )
+
+    return register;
 }
 
-const register = (
-    <div style={{margin: 0, padding: 0}}>
-        <div>
-            <span style={styles.labelStyles}>Nome</span>
-            <InputText />
-        </div>
-        <div>
-            <span style={styles.labelStyles}>E-mail</span>
-            <InputText />
-        </div>
-        <div>
-            <span style={styles.labelStyles}>Senha</span>
-            <InputPassword />
-        </div>
-        <div>
-            <span style={styles.labelStyles}>Confirmação de senha</span>
-            <InputPassword />
-        </div>
-        <div>
-            <ButtomPrimary 
-                buttomTitle={'Registrar'}
-                buttomStyle={styles.styleButtom}    
-            />
-        </div>
-    </div> 
-)
 
 
-ReactDOM.render(register, document.getElementById('root'));
+
+ReactDOM.render(<IndexCompoenet />, document.getElementById('root'));
